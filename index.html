@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+	<meta charset="UTF-8">
+	<title>Аннуитет</title>
+	<style>
+
+		* {
+			font-size: 25px;
+		}
+
+		#container {
+			position: absolute;
+			left: 25%;
+			top: 10%;
+		}
+
+		
+
+		input {
+			width:80px;
+			height:30px;
+			float:right;
+			margin-right:5px;
+		}
+
+		#in, #out {
+			border: solid black 1px;
+			width:350px;
+			height: 360px;
+			float:left;
+			margin:10px;
+			padding: 10px;
+		}
+
+		/*
+		#out:empty {
+			border: none;
+		}
+		*/
+
+		button {
+			display: block;
+			margin: auto;
+			margin-bottom: 5px;
+			background-color:#4CAF50;
+			border:none;
+			color:white;
+			padding:10px 25px;
+		}
+
+		button:hover {
+			background-color:green;
+		}
+
+		button:active {
+			background-color:#4CAF50;
+		}
+
+		/*
+		#age:valid, #old:valid, #after:valid, #income:valid, #percent:valid {
+			color:green;
+		}
+
+		#age:invalid, #old:invalid, #after:invalid, #income:invalid, #percent:invalid {
+			color:red;
+		}
+		*/
+
+
+
+	</style>
+</head>
+<body>
+	<div id="container">
+		<h1>Пенсионный калькулятор</h1>
+		<div id = "in">
+				<p>Возраст <input id="age" type="number" value = 35 min = 0 max = 100  required></p>
+				<p>Пенсионный возраст <input id="old" type="number"  value = 65 min = 0 max = 100 required></p>
+				<p>После пенсии <input id ="after" type="number" value = 15 min = 0 max = 100 required></p>
+				<p>Годовой доход (тыс) <input id="income" type="number" value = 2000 min = 0 required></p>
+				<p>Ставка (%)  <input id="percent" type="number" value = 7 min = 0 max = 100 required></p>
+				<button onclick="calc()">Рассчитать</button>
+		</div>
+
+		<div id="out">
+			<p>Нажмите на кнопку "Рассчитать", чтобы тут появилась информация</p>
+		</div>
+	</div>
+		
+	<script>
+
+		function PV (r,n) {
+			return (1 - (1 / Math.pow((1+r), n)))/r
+		}
+
+		function FV (r,n) {
+			return ((Math.pow((1 + r), n)) - 1)/r
+		}
+
+		function insertAfter(newNode, referenceNode){
+			referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+		}
+
+
+		function calc() {
+
+			var age = parseInt(document.getElementById("age").value);
+			var old = parseInt(document.getElementById("old").value);
+			var after = parseInt(document.getElementById("after").value);
+			var income = parseInt(document.getElementById("income").value) * 1000;
+			var perc = parseFloat(document.getElementById("percent").value) / 100;
+
+			if ((age < 0) || (age !== age) || (old < 0) || (old !== old)) {
+				alert ("Некорректный возраст")
+				return
+			}
+
+			if (old < age) {
+				alert ("Пенсионный возраст меньше возраста на данный момент")
+				return
+			}
+
+			if (after > 99) {
+				alert ("После пенсии столько не живут");
+				return
+			}
+
+			if (income <= 0) {
+				alert ("Доход должен быть положительным");
+				return
+			}
+
+			if (perc <= 0) {
+				alert ("Процентная ставка меньше нуля");
+				return
+			}
+
+			var n1 = old - age;
+			var n2 = after;
+			console.log(' ');
+			console.log("Лет копить: " + n1);
+			console.log("Лет после пенсии: " + n2);
+
+			var f = FV(perc,n1);
+			console.log("FV: " + f.toFixed(3));
+
+			var p = PV(perc,n2);
+			console.log("PV: " + p.toFixed(3));
+
+			var c = Math.round((f*income)/(f+p));
+			console.log("Тратить в год: " + c);
+
+			var sav = income - c;
+			console.log("Сберегать в год: " + sav);
+
+			var out = document.getElementById('out');
+			out.textContent = '';
+
+			var p_n1 = document.createElement("p");
+			p_n1.textContent = "Лет копить: " + n1;
+
+			var p_n2 = document.createElement("p");
+			p_n2.textContent = "Лет после пенсии: " + n2;
+
+			var p_f = document.createElement("p");
+			p_f.textContent = "FV: " + f.toFixed(3);
+
+			var p_p = document.createElement("p");
+			p_p.textContent = "PV: " + p.toFixed(3);
+
+			var p_c = document.createElement("p");
+			p_c.textContent = "Тратить в год: " + c;
+
+			var p_sav = document.createElement("p");
+			p_sav.textContent = "Сберегать в год: " + sav;
+
+			out.appendChild(p_n1);
+			out.appendChild(p_n2);
+			out.appendChild(p_f);
+			out.appendChild(p_p);
+			out.appendChild(p_c);
+			out.appendChild(p_sav);
+			}
+
+
+	</script>
+	
+</body>
+</html>
